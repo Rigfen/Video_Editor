@@ -50,7 +50,7 @@ if uploaded_file:
     # Trim Tool
     # --------------------------------
     st.subheader("✂ Trim Video")
-    container = av.open(str(temp_input_path))
+    
     duration = float(container.duration / container.time_base) if container.duration else 0
 
     start = st.number_input("Start time (seconds)", min_value=0.0, max_value=max(0.0, duration-1), value=0.0)
@@ -58,8 +58,7 @@ if uploaded_file:
 
     if st.button("Trim Video"):
         output_path = Path(tempfile.mktemp(suffix="_trimmed.mp4"))
-        in_container = av.open(str(temp_input_path))
-        out_container = av.open(str(output_path), mode='w')
+        
 
         stream = in_container.streams.video[0]
         out_stream = out_container.add_stream("libx264", rate=stream.rate)
