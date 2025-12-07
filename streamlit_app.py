@@ -42,11 +42,42 @@ if image_path.exists():
     banner = Image.open(image_path)
     st.image(banner, width=600)
 
-# -------------------------------------------------
+# --------------------------------
 # File uploader
-# -------------------------------------------------
-st.sidebar.header("📁 Upload Video")
-uploaded_file = st.sidebar.file_uploader("Load your video file", type=["mp4", "mov", "avi", "mkv"])
+# --------------------------------
+uploaded_file = st.file_uploader("Upload video", type=["mp4","mov","avi","mkv"])
+
+if uploaded_file:
+    # Save uploaded file to a temp path
+    temp_input_path = Path(tempfile.mktemp(suffix=uploaded_file.name))
+    with open(temp_input_path, "wb") as f:
+        f.write(uploaded_file.read())
+    
+    st.success("Video loaded!")
+    
+    # Load with MoviePy safely
+    try:
+        clip = VideoFileClip(str(temp_input_path))
+        duration = clip.duration
+    except Exception as e:
+        st.error("❌ Could not read video duration. Upload a different file.")
+        st.stop()
+
+    st.video(str(temp_input_path))
+    
+    # Trim inputs
+    start = st.number_input("Start time (seconds)", min_value=0.0, max_value=max(0.0, duration-0.1), value=0.0)
+    end = st.number_input("End time (seconds)", min_value=0.1, max_value=duration, value=duration)
+    
+    if st.button("Trim Video"):
+        if start >= end:
+            st.error("Start time must be less than end time.")
+        else:
+            output_path = Path(tempfile.mktemp(suffix="_trimmed.mp4"))
+            trimmed_clip = clip.subclip(start, end)
+            trimmed_clip.write_videofile(str(output_path), codec="libx264")
+            st.success("Trim complete!")
+            st.video(str(output_path))
 
 # -------------------------------------------------
 # Main Logic
