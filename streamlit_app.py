@@ -3,7 +3,7 @@ from pathlib import Path
 from PIL import Image
 import tempfile
 import subprocess
-
+from moviepy.editor import VideoFileClip
 # -------------------------------------------------
 # Helper: Get video duration using ffprobe
 # -------------------------------------------------
