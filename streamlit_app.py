@@ -2,7 +2,6 @@ import streamlit as st
 from pathlib import Path
 from PIL import Image
 import pandas as pd
-import av
 import tempfile
 import os
 
